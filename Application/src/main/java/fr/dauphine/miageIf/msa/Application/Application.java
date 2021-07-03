@@ -171,12 +171,7 @@ public class Application {
 				String uri = "http://localhost:8000/exchange-rate/add-rate/source="+TCSource.getText()+"&dest="+TCDest.getText()+"&rate="+TCTaux.getText()+"&date="+TCDate.getText();
 				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
 				String text = response.getBody().toString();
-				textArea.setText("");
-				int i = 0;
-				for (i = 0; i < text.length()/135; i++){
-					textArea.append(text.substring(i*135, (i+1)*135) + "\n");
-				}
-				textArea.append(text.substring(i*135));
+				textArea.setText(text);
 			}
 		});
 		btnInserer.setBounds(518, 68, 89, 23);
@@ -191,11 +186,17 @@ public class Application {
 				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
 				String text = response.getBody().toString();
 				textArea.setText("");
-				int i = 0;
-				for (i = 0; i < text.length()/135; i++){
-					textArea.append(text.substring(i*135, (i+1)*135) + "\n");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
 				}
-				textArea.append(text.substring(i*135));
 			}
 		});
 		btnToutRcuprer.setBounds(10, 68, 110, 23);
@@ -210,11 +211,17 @@ public class Application {
 				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
 				String text = response.getBody().toString();
 				textArea.setText("");
-				int i = 0;
-				for (i = 0; i < text.length()/135; i++){
-					textArea.append(text.substring(i*135, (i+1)*135) + "\n");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
 				}
-				textArea.append(text.substring(i*135));
 			}
 		});
 		btnRcuprerHistoriqueCouple.setBounds(130, 68, 184, 23);
@@ -228,12 +235,7 @@ public class Application {
 				String uri = "http://localhost:8000/exchange-rate/get/rate/source="+TCSource.getText()+"&dest="+TCDest.getText()+"&date="+TCDate.getText();
 				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
 				String text = response.getBody().toString();
-				textArea.setText("");
-				int i = 0;
-				for (i = 0; i < text.length()/135; i++){
-					textArea.append(text.substring(i*135, (i+1)*135) + "\n");
-				}
-				textArea.append(text.substring(i*135));
+				textArea.setText(text);
 			}
 		});
 		btnRcuprerTauxDeChange.setBounds(324, 68, 184, 23);
@@ -247,12 +249,7 @@ public class Application {
 				String uri = "http://localhost:8000/exchange-rate/update-existing-rate/source="+TCSource.getText()+"&dest="+TCDest.getText()+"&date="+TCDate.getText()+"&new_rate="+TCTaux.getText();
 				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
 				String text = response.getBody().toString();
-				textArea.setText("");
-				int i = 0;
-				for (i = 0; i < text.length()/135; i++){
-					textArea.append(text.substring(i*135, (i+1)*135) + "\n");
-				}
-				textArea.append(text.substring(i*135));
+				textArea.setText(text);
 			}
 		});
 		btnModifier.setBounds(618, 68, 89, 23);
@@ -266,12 +263,7 @@ public class Application {
 				String uri = "http://localhost:8000/exchange-rate/delete-existing-rate/source="+TCSource.getText()+"&dest="+TCDest.getText()+"&date="+TCDate.getText();
 				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
 				String text = response.getBody().toString();
-				textArea.setText("");
-				int i = 0;
-				for (i = 0; i < text.length()/135; i++){
-					textArea.append(text.substring(i*135, (i+1)*135) + "\n");
-				}
-				textArea.append(text.substring(i*135));
+				textArea.setText(text);
 			}
 		});
 		btnSupprimer.setBounds(715, 68, 89, 23);
@@ -281,46 +273,175 @@ public class Application {
 
 		JButton btnToutRecuperTransaction = new JButton("Tout r\u00E9cup\u00E9rer");
 		btnToutRecuperTransaction.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnToutRecuperTransaction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/get-all";
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText("");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
+				}
+			}
+		});
 		btnToutRecuperTransaction.setBounds(10, 158, 110, 23);
 		panel.add(btnToutRecuperTransaction);
 
+		JSpinner spinnerMontant = new JSpinner();
+		spinnerMontant.setModel(new SpinnerListModel(new String[] {"=", "<", "<=", ">", ">="}));
+		spinnerMontant.setBounds(285, 159, 46, 20);
+		panel.add(spinnerMontant);
+
 		JButton btnFiltrerMontant = new JButton("Filtrer sur montant");
 		btnFiltrerMontant.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnFiltrerMontant.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/filter/montant"+ spinnerMontant.getValue() +TMontant.getText();
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText("");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
+				}
+			}
+		});
 		btnFiltrerMontant.setBounds(140, 158, 129, 23);
 		panel.add(btnFiltrerMontant);
 
-		JSpinner spinner = new JSpinner();
-		spinner.setModel(new SpinnerListModel(new String[] {"=", "<", "<=", ">", ">="}));
-		spinner.setBounds(285, 159, 46, 20);
-		panel.add(spinner);
-
 		JButton btnFiltrerSource = new JButton("Filtrer sur Source");
 		btnFiltrerSource.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnFiltrerSource.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/filter/source="+TSource.getText();
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText("");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
+				}
+			}
+		});
 		btnFiltrerSource.setBounds(352, 158, 119, 23);
 		panel.add(btnFiltrerSource);
 
 		JButton btnFiltreDest = new JButton("Filtrer sur Dest");
 		btnFiltreDest.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnFiltreDest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/filter/dest="+TDest.getText();
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText("");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
+				}
+			}
+		});
 		btnFiltreDest.setBounds(481, 158, 110, 23);
 		panel.add(btnFiltreDest);
 
+		JSpinner spinnerDate = new JSpinner();
+		spinnerDate.setModel(new SpinnerListModel(new String[] {"<", ">"}));
+		spinnerDate.setBounds(713, 159, 30, 20);
+		panel.add(spinnerDate);
+
 		JButton btnFiltrerDate = new JButton("Filtrer sur Date");
 		btnFiltrerDate.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnFiltrerDate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/filter/date" + spinnerDate.getValue() +TDate.getText();
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText("");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
+				}
+			}
+		});
 		btnFiltrerDate.setBounds(601, 158, 106, 23);
 		panel.add(btnFiltrerDate);
 
-		JSpinner spinner_1 = new JSpinner();
-		spinner_1.setModel(new SpinnerListModel(new String[] {"<", ">"}));
-		spinner_1.setBounds(713, 159, 30, 20);
-		panel.add(spinner_1);
-
 		JButton btnRcuprerHistoriqueCoupleTransactions = new JButton("R\u00E9cup\u00E9rer historique couple");
 		btnRcuprerHistoriqueCoupleTransactions.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnRcuprerHistoriqueCoupleTransactions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/filter/couple="+TSource.getText()+"&"+TDest.getText();
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText("");
+				int posInter = 0;
+				int posTotale = 0;
+				if (!text.contains("}")){ //sécurité si liste vide
+					textArea.append(text);
+				}else{
+					while (posTotale < text.length()) {
+						posInter = text.substring(posTotale).indexOf("}");
+						textArea.append(text.substring(posTotale, posTotale + posInter + 2) + "\n");
+						posTotale += posInter + 2;
+					}
+				}
+			}
+		});
 		btnRcuprerHistoriqueCoupleTransactions.setBounds(10, 192, 184, 23);
 		panel.add(btnRcuprerHistoriqueCoupleTransactions);
 
 		JButton btnFaireTransaction = new JButton("Faire transaction");
 		btnFaireTransaction.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnFaireTransaction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RestTemplate restTemplate = new RestTemplate();
+				String uri = "http://localhost:8034/transaction/make/source="+TSource.getText()+"&dest="+TDest.getText()+"&montant="+TMontant.getText()+"&date="+TDate.getText();
+				ResponseEntity<Object> response = restTemplate.getForEntity(uri, Object.class);
+				String text = response.getBody().toString();
+				textArea.setText(text);
+			}
+		});
 		btnFaireTransaction.setBounds(216, 192, 115, 23);
 		panel.add(btnFaireTransaction);
 
