@@ -199,7 +199,13 @@ public class ChangeController {
         String uri = "http://localhost:8000/exchange-rate/get/rate/source="+source+"&dest="+dest+"&date="+dateFormat.format(date);
         ResponseEntity<BigDecimal> response = restTemplate.getForEntity(uri, BigDecimal.class);
         BigDecimal taux = response.getBody();
-        Long id = repository.findFirstByOrderByIdDesc().getId() + 1;
+        Long id;
+        Transaction t = repository.findFirstByOrderByIdDesc();
+        if (t == null){
+            id = new Long(1);
+        }else{
+            id = t.getId() + 1;
+        }
 
         Transaction transaction = new Transaction(id, source, dest, montant, taux, date);
         repository.save(transaction);

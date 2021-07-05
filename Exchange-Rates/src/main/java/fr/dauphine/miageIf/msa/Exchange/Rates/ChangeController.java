@@ -67,7 +67,13 @@ public class ChangeController {
     @RequestMapping("/exchange-rate/add-rate/source={source}&dest={dest}&rate={taux}&date={date}")
     public TauxChange ajouterTauxChange
             (@PathVariable String source, @PathVariable String dest, @PathVariable BigDecimal taux, @PathVariable Date date){
-        Long id = repository.findFirstByOrderByIdDesc().getId() + 1;
+        Long id;
+        TauxChange t = repository.findFirstByOrderByIdDesc();
+        if (t == null){
+            id = new Long(1);
+        }else{
+            id = t.getId() + 1;
+        }
         TauxChange tauxChange= new TauxChange(id, source, dest, taux, date);
         repository.save(tauxChange);
 
@@ -83,7 +89,6 @@ public class ChangeController {
     public TauxChange modifierTauxChange
             (@PathVariable String source, @PathVariable String dest, @PathVariable BigDecimal taux, @PathVariable Date date){
         TauxChange tauxChange = repository.findFirstBySourceAndDestAndDate(source, dest, date);
-        repository.delete(tauxChange);
         tauxChange.setTaux(taux);
         repository.save(tauxChange);
 
